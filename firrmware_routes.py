@@ -14,18 +14,6 @@ firmware = APIRouter(prefix='/firmware', tags=['firmware'])
 
 firmware_version: str = ''
 
-@firmware.post('/set-version')
-async def set_version(version: str):
-    global firmware_version
-
-    preview_version = firmware_version
-    firmware_version = version
-
-    return {
-        'message': 'version updated!',
-        'preview version': preview_version,
-        'atual version': firmware_version
-    }
 
 @firmware.get('/')
 async def get_firmware_version():
@@ -43,6 +31,19 @@ async def download_firmware():
         media_type="application/octet-stream"
     )
 
+@firmware.post('/set-version')
+async def set_version(version: str):
+    global firmware_version
+
+    preview_version = firmware_version
+    firmware_version = version
+
+    return {
+        'message': 'version updated!',
+        'preview version': preview_version,
+        'atual version': firmware_version
+    }
+
 @firmware.post('/update')
 async def update_firmware(firmware: UploadFile = File(...)):
     file_path = f'./firmwares/{firmware.filename}'
@@ -56,9 +57,6 @@ async def update_firmware(firmware: UploadFile = File(...)):
         "content_type": firmware.content_type,
         "status": "upload concluído"
     }
-
-
-    
 
 @firmware.post('/success')
 async def success_update(message: Status):
