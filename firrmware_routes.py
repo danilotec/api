@@ -1,5 +1,14 @@
 from fastapi import APIRouter, UploadFile, File
 from fastapi.responses import FileResponse
+from dataclasses import dataclass
+import json
+import datetime
+
+@dataclass
+class Status:
+    name: str
+    version: str
+
 
 firmware = APIRouter(prefix='/firmware', tags=['firmware'])
 
@@ -46,4 +55,37 @@ async def update_firmware(firmware: UploadFile = File(...)):
         "filename": firmware.filename,
         "content_type": firmware.content_type,
         "status": "upload concluído"
+    }
+
+
+    
+
+@firmware.post('/success')
+async def success_update(message: Status):
+    logging = {
+        'data': message.__dict__,
+        'date': str(datetime.datetime.now())
+    }
+    data = json.dumps(logging)
+
+    with open('success.log', 'a', encoding='utf-8') as log:
+        log.write(f'{data}\n')
+    
+    return {
+        'status': 'success'
+    }
+
+@firmware.post('/fail')
+async def fail_update(message: Status):
+    logging = {
+        'data': message.__dict__,
+        'date': str(datetime.datetime.now())
+    }
+    data = json.dumps(logging)
+
+    with open('fail.log', 'a', encoding='utf-8') as log:
+        log.write(f'{data}\n')
+    
+    return {
+        'status': 'success'
     }
