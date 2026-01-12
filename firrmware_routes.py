@@ -1,8 +1,9 @@
-from fastapi import APIRouter, UploadFile, File
+from fastapi import APIRouter, UploadFile, File, Depends
 from fastapi.responses import FileResponse
 from dataclasses import dataclass
 import json
 import datetime
+from security import bearer_auth
 
 @dataclass
 class Status:
@@ -10,7 +11,11 @@ class Status:
     version: str
 
 
-firmware = APIRouter(prefix='/firmware', tags=['firmware'])
+firmware = APIRouter(
+    prefix='/firmware', 
+    tags=['firmware'],
+    dependencies=[Depends(bearer_auth)]
+    )
 
 firmware_version: str = ''
 
